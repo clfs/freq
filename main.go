@@ -25,7 +25,7 @@ func main() {
 		}
 	case "byte":
 		for _, e := range SortedEntries(ByteFreq(os.Stdin)) {
-			fmt.Printf("%d\t0x%02X\t%s\t%s\n", e.Frequency, e.Token, neatByte(e.Token), runenames.Name(rune(e.Token)))
+			fmt.Printf("%d\t%02x\t%s\t%s\n", e.Frequency, e.Token, neatByte(e.Token), runenames.Name(rune(e.Token)))
 		}
 	case "rune":
 		for _, e := range SortedEntries(RuneFreq(os.Stdin)) {
