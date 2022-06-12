@@ -63,3 +63,34 @@ $ echo -n "Hello? Привет? Hello?" | freq -by rune
 1	U+0440	р	CYRILLIC SMALL LETTER ER
 1	U+0442	т	CYRILLIC SMALL LETTER TE
 ```
+
+## Why write this?
+
+The usual recommendation for showing frequency distributions is to:
+
+1. Call `sort` to sort standard input.
+2. Then, call `uniq -c` to deduplicate standard input while adding line counts.
+3. Then, call `sort -nr` to reverse sort by the new line counts.
+
+However, sorting standard input is expensive and unnecessary. You shouldn't
+need to sort data to get a frequency distribution in the first place.
+
+```text
+$ time yes | head -n 123456789 | sort | uniq -c | sort -nr
+123456789 y
+yes  3.04s user 0.04s system 28% cpu 10.905 total
+head -n 123456789  4.87s user 0.06s system 45% cpu 10.902 total
+sort  31.87s user 0.70s system 87% cpu 37.152 total
+uniq -c  16.17s user 0.05s system 43% cpu 37.152 total
+sort -nr  0.00s user 0.00s system 0% cpu 37.151 total
+```
+
+In comparison, `freq` is faster and easier to remember.
+
+```text
+$ time yes | head -n 123456789 | freq
+123456789	y
+yes  3.10s user 0.04s system 63% cpu 4.977 total
+head -n 123456789  4.93s user 0.04s system 99% cpu 4.971 total
+freq  2.20s user 0.06s system 45% cpu 4.970 total
+```
