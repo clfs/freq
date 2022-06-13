@@ -72,8 +72,8 @@ The usual recommendation for showing frequency distributions is to:
 2. Then, call `uniq -c` to deduplicate standard input while adding line counts.
 3. Then, call `sort -nr` to reverse sort by the new line counts.
 
-However, sorting standard input is expensive and unnecessary. You shouldn't
-need to sort data to get a frequency distribution in the first place.
+However, you shouldn't be sorting input to get its frequency distribution in the
+first place. Here's a worst-case scenario:
 
 ```text
 $ time yes | head -n 123456789 | sort | uniq -c | sort -nr
