@@ -1,5 +1,5 @@
 # freq
-Report frequency distributions from stdin.
+Compute frequency distributions from stdin.
 
 ## Setup
 
