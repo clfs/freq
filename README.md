@@ -66,31 +66,19 @@ $ echo -n "Hello? Привет? Hello?" | freq -by rune
 
 ## Why write this?
 
-The usual recommendation for showing frequency distributions is to:
+This is the usual recommendation for computing frequency distributions:
 
-1. Call `sort` to sort standard input.
-2. Then, call `uniq -c` to deduplicate standard input while adding line counts.
-3. Then, call `sort -nr` to reverse sort by the new line counts.
-
-However, you shouldn't be sorting input to get its frequency distribution in the
-first place. Here's a worst-case scenario:
-
-```text
-$ time yes | head -n 123456789 | sort | uniq -c | sort -nr
-123456789 y
-yes  3.04s user 0.04s system 28% cpu 10.905 total
-head -n 123456789  4.87s user 0.06s system 45% cpu 10.902 total
-sort  31.87s user 0.70s system 87% cpu 37.152 total
-uniq -c  16.17s user 0.05s system 43% cpu 37.152 total
-sort -nr  0.00s user 0.00s system 0% cpu 37.151 total
+```bash
+cat example.txt | sort | uniq -c | sort -nr
 ```
 
-In comparison, `freq` is faster and easier to remember.
+However, it's not necessary to sort the input. Sorting is slow and uses a lot of
+memory. In comparison, `freq` is faster and has more features.
 
-```text
-$ time yes | head -n 123456789 | freq
-123456789	y
-yes  3.10s user 0.04s system 63% cpu 4.977 total
-head -n 123456789  4.93s user 0.04s system 99% cpu 4.971 total
-freq  2.20s user 0.06s system 45% cpu 4.970 total
+Some people also recommend using `awk`, like this:
+
+```bash
+awk ' { tot[$0]++ } END { for (i in tot) print tot[i],i } ' example.txt | sort
 ```
+
+It doesn't use any sorting, but it seems hard to remember.
