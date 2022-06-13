@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"unicode"
 	"unicode/utf8"
@@ -56,7 +57,9 @@ func LineFreq(r io.Reader) map[string]int {
 	for s.Scan() {
 		freq[s.Text()]++ // max token length is 65535 bytes
 	}
-	_ = s.Err() // ignored
+	if err := s.Err(); err != nil {
+		log.Fatal(err) // handle this eventually
+	}
 	return freq
 }
 
