@@ -38,13 +38,13 @@ $ echo "Hello...\nПривет...\nHello..." | freq
 By bytes:
 ```text
 $ head -c 10 /bin/ls | freq -by byte
-4       00      �       <control>
-1       01      �       <control>
-1       02      �       <control>
-1       ba      º       MASCULINE ORDINAL INDICATOR
-1       be      ¾       VULGAR FRACTION THREE QUARTERS
-1       ca      Ê       LATIN CAPITAL LETTER E WITH CIRCUMFLEX
-1       fe      þ       LATIN SMALL LETTER THORN
+4	00	�	<control>
+1	01	�	<control>
+1	02	�	<control>
+1	ba	º	MASCULINE ORDINAL INDICATOR
+1	be	¾	VULGAR FRACTION THREE QUARTERS
+1	ca	Ê	LATIN CAPITAL LETTER E WITH CIRCUMFLEX
+1	fe	þ	LATIN SMALL LETTER THORN
 ```
 
 By runes:
