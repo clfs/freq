@@ -40,9 +40,18 @@ func TestSortedEntries_Line(t *testing.T) {
 		in   map[string]int
 		want []Entry[string]
 	}{
-		{map[string]int{}, []Entry[string]{}},
-		{map[string]int{"a": 1}, []Entry[string]{{"a", 1}}},
-		{map[string]int{"a": 1, "b": 2}, []Entry[string]{{"b", 2}, {"a", 1}}},
+		{
+			map[string]int{},
+			[]Entry[string]{},
+		},
+		{
+			map[string]int{"a": 1},
+			[]Entry[string]{{"a", 1}},
+		},
+		{
+			map[string]int{"a": 1, "b": 2},
+			[]Entry[string]{{"b", 2}, {"a", 1}},
+		},
 	}
 	for _, c := range cases {
 		got := SortedEntries(c.in)
