@@ -30,9 +30,9 @@ Usage of freq:
 
 By lines:
 ```text
-$ echo "Hello...\nПривет...\nHello..." | freq
-2	Hello...
-1	Привет...
+$ awk '{print $1}' go.sum | freq
+2	golang.org/x/exp
+2	golang.org/x/text
 ```
 
 By bytes:
