@@ -1,8 +1,6 @@
 # freq
 Compute frequency distributions from stdin.
 
-## Setup
-
 Install or update it:
 ```text
 go install github.com/clfs/freq@latest
