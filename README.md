@@ -3,12 +3,7 @@ Compute frequency distributions from stdin.
 
 ## Setup
 
-Install it:
-```text
-go install github.com/clfs/freq@latest
-```
-
-Update it:
+Install or update it:
 ```text
 go install github.com/clfs/freq@latest
 ```
