@@ -8,7 +8,7 @@ go install github.com/clfs/freq@latest
 
 Uninstall it:
 ```text
-rm $(which freq)
+rm -i $(which freq)
 ```
 
 ## Examples
