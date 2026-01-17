@@ -31,56 +31,56 @@ Examples:
 
 ```plaintext
 $ ps -eo user | freq | head
-368     calvin          
-159     root            
-13      _accessoryupdater
-8       _cmiodalassistants
-7       _locationd      
-7       _rmd            
-7       _softwareupdate 
-5       _coreaudiod     
-5       _spotlight      
-4       _nsurlsessiond
+660     calvin          
+193     root            
+18      _accessoryupdater
+13      _rmd            
+12      _cmiodalassistants
+8       _locationd      
+6       _coreaudiod     
+5       _applepay       
+5       _nsurlsessiond  
+4       _driverkit
 ```
 
 ```plaintext
 $ cat /bin/ls | freq -by byte | head
-138812  0x00
-1846    0xff
-1625    0x01
-1407    0x03
-1157    0x48
-929     0x5f
-899     0x74
-883     0x20
-757     0x40
-720     0x65
+107087  0x00
+1843    0xff
+1628    0x01
+1142    0x48
+1125    0x03
+925     0x5f
+882     0x74
+736     0x40
+731     0x65
+666     0x02
 ```
 
 ```plaintext
 $ cat /usr/share/locale/zh_CN/LC_TIME | freq -by rune | head
 58      "\n"
-25      "月"
+37      "月"
 21      "%"
 16      " "
+15      "1"
 7       "星"
 7       "期"
-6       "一"
-6       "二"
-6       "十"
-5       "1"
+6       "2"
+3       "/"
+3       "0"
 ```
 
 ```plaintext
 $ man tar | freq -by word | head
-299     the
-128     and
-113     is
-113     to
-81      or
-76      of
+326     the
+129     and
+121     to
+119     is
+92      or
+86      of
 76      tar
+69      be
 65      archive
-60      be
-60      in
+62      a
 ```
