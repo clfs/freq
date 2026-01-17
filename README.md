@@ -1,77 +1,86 @@
 # freq
-Compute frequency distributions from stdin.
 
-Install or update it:
-```text
+Compute frequency distributions over standard input.
+
+Requirements:
+
+- [Go](https://go.dev)
+
+Install or update:
+
+```plaintext
 go install github.com/clfs/freq@latest
 ```
 
-Uninstall it:
-```text
+Uninstall:
+
+```bash
 rm -i $(which freq)
 ```
 
-## Examples
-
 Usage:
-```text
+
+```plaintext
 $ freq -h
 Usage of freq:
   -by string
-        token type: line, byte, or rune (default "line")
+        line, byte, rune, or word (default "line")
 ```
 
-By lines:
-```text
-$ awk '{print $1}' go.sum | freq
-2	golang.org/x/exp
-2	golang.org/x/text
+Examples:
+
+```plaintext
+$ ps -eo user | freq | head
+660     calvin          
+193     root            
+18      _accessoryupdater
+13      _rmd            
+12      _cmiodalassistants
+8       _locationd      
+6       _coreaudiod     
+5       _applepay       
+5       _nsurlsessiond  
+4       _driverkit
 ```
 
-By bytes:
-```text
-$ head -c 10 /bin/ls | freq -by byte
-4	00	�	<control>
-1	01	�	<control>
-1	02	�	<control>
-1	ba	º	MASCULINE ORDINAL INDICATOR
-1	be	¾	VULGAR FRACTION THREE QUARTERS
-1	ca	Ê	LATIN CAPITAL LETTER E WITH CIRCUMFLEX
-1	fe	þ	LATIN SMALL LETTER THORN
+```plaintext
+$ cat /bin/ls | freq -by byte | head
+107087  0x00
+1843    0xff
+1628    0x01
+1142    0x48
+1125    0x03
+925     0x5f
+882     0x74
+736     0x40
+731     0x65
+666     0x02
 ```
 
-By runes:
-```text
-$ echo -n "Hello? Привет? Hello?" | freq -by rune
-4	U+006C	l	LATIN SMALL LETTER L
-3	U+003F	?	QUESTION MARK
-2	U+0020	 	SPACE
-2	U+0048	H	LATIN CAPITAL LETTER H
-2	U+0065	e	LATIN SMALL LETTER E
-2	U+006F	o	LATIN SMALL LETTER O
-1	U+041F	П	CYRILLIC CAPITAL LETTER PE
-1	U+0432	в	CYRILLIC SMALL LETTER VE
-1	U+0435	е	CYRILLIC SMALL LETTER IE
-1	U+0438	и	CYRILLIC SMALL LETTER I
-1	U+0440	р	CYRILLIC SMALL LETTER ER
-1	U+0442	т	CYRILLIC SMALL LETTER TE
+```plaintext
+$ cat /usr/share/locale/zh_CN/LC_TIME | freq -by rune | head
+58      "\n"
+37      "月"
+21      "%"
+16      " "
+15      "1"
+7       "星"
+7       "期"
+6       "2"
+3       "/"
+3       "0"
 ```
 
-## Why write this?
-
-This is the usual recommendation for computing frequency distributions:
-
-```bash
-cat example.txt | sort | uniq -c | sort -nr
+```plaintext
+$ man tar | freq -by word | head
+326     the
+129     and
+121     to
+119     is
+92      or
+86      of
+76      tar
+69      be
+65      archive
+62      a
 ```
-
-However, it's not necessary to sort the input. Sorting is slow and uses a lot of
-memory. In comparison, `freq` is faster and has more features.
-
-Some people also recommend using `awk`, like this:
-
-```bash
-awk ' { tot[$0]++ } END { for (i in tot) print tot[i],i } ' example.txt | sort
-```
-
-It doesn't use any sorting, but it seems hard to remember.
