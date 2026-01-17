@@ -22,10 +22,17 @@ var splitFuncs = map[string]bufio.SplitFunc{
 	"word": bufio.ScanWords,
 }
 
-type unsupportedByError string
+type unsupportedByError struct {
+	by string
+}
 
 func (e unsupportedByError) Error() string {
-	return fmt.Sprintf("unsupported -by value: %s", string(e))
+	return fmt.Sprintf("unsupported -by value: %s", e.by)
+}
+
+type entry struct {
+	key   string
+	count int
 }
 
 type command struct {
@@ -41,7 +48,7 @@ func newCommand(by string, r io.Reader, w io.Writer) *command {
 func (c *command) run() error {
 	fn, ok := splitFuncs[c.by]
 	if !ok {
-		return unsupportedByError(c.by)
+		return unsupportedByError{by: c.by}
 	}
 
 	d, err := distribution(c.r, fn)
@@ -79,15 +86,10 @@ func (c *command) run() error {
 			fmt.Fprintf(c.w, "%d\t%U\t%s\t%s\n", e.count, firstRune(e.key), neatRune(firstRune(e.key)), runenames.Name(firstRune(e.key)))
 		}
 	default:
-		return unsupportedByError(c.by)
+		return unsupportedByError{by: c.by}
 	}
 
 	return nil
-}
-
-type entry struct {
-	key   string
-	count int
 }
 
 func main() {
