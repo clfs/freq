@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
-	"errors"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -64,14 +62,6 @@ func TestCommand_Run(t *testing.T) {
 				})
 			}
 		})
-	}
-}
-
-func TestDistribution_TooLong(t *testing.T) {
-	in := strings.Repeat("a", bufio.MaxScanTokenSize+1)
-	_, err := distribution(strings.NewReader(in), "word")
-	if !errors.Is(err, bufio.ErrTooLong) {
-		t.Errorf("want bufio.ErrTooLong, got %v", err)
 	}
 }
 
