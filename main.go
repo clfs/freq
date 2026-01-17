@@ -22,6 +22,29 @@ var splitFuncs = map[string]bufio.SplitFunc{
 	"word": bufio.ScanWords,
 }
 
+var prettyFuncs = map[string]func(entry) string{
+	"line": prettyLine,
+	"word": prettyWord,
+	"byte": prettyByte,
+	"rune": prettyRune,
+}
+
+func prettyLine(e entry) string {
+	return fmt.Sprintf("%d\t%s", e.count, e.key)
+}
+
+func prettyWord(e entry) string {
+	return fmt.Sprintf("%d\t%s", e.count, e.key)
+}
+
+func prettyByte(e entry) string {
+	return fmt.Sprintf("%d\t%02x\t%s\t%s", e.count, e.key, neatByte(e.key[0]), runenames.Name(rune(e.key[0])))
+}
+
+func prettyRune(e entry) string {
+	return fmt.Sprintf("%d\t%U\t%s\t%s", e.count, firstRune(e.key), neatRune(firstRune(e.key)), runenames.Name(firstRune(e.key)))
+}
+
 type unsupportedByError struct {
 	by string
 }
@@ -72,21 +95,13 @@ func (c *command) run() error {
 		return cmp.Compare(a.key, b.key)
 	})
 
-	switch c.by {
-	case "line", "word":
-		for _, e := range entries {
-			fmt.Fprintf(c.w, "%d\t%s\n", e.count, e.key)
-		}
-	case "byte":
-		for _, e := range entries {
-			fmt.Fprintf(c.w, "%d\t%02x\t%s\t%s\n", e.count, e.key, neatByte(e.key[0]), runenames.Name(rune(e.key[0])))
-		}
-	case "rune":
-		for _, e := range entries {
-			fmt.Fprintf(c.w, "%d\t%U\t%s\t%s\n", e.count, firstRune(e.key), neatRune(firstRune(e.key)), runenames.Name(firstRune(e.key)))
-		}
-	default:
+	pretty, ok := prettyFuncs[c.by]
+	if !ok {
 		return unsupportedByError{by: c.by}
+	}
+
+	for _, e := range entries {
+		fmt.Fprintln(c.w, pretty(e))
 	}
 
 	return nil

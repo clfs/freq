@@ -7,6 +7,64 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func TestPretty(t *testing.T) {
+	tests := []struct {
+		by   string
+		in   entry
+		want string
+	}{
+		{
+			"line",
+			entry{key: "hello", count: 3},
+			"3\thello",
+		},
+		{
+			"word",
+			entry{key: "world", count: 2},
+			"2\tworld",
+		},
+		{
+			"byte",
+			entry{key: "A", count: 5},
+			"5\t41\tA\tLATIN CAPITAL LETTER A",
+		},
+		{
+			"byte",
+			entry{key: "\x00", count: 1},
+			"1\t00\t�\t<control>",
+		},
+		{
+			"rune",
+			entry{key: "B", count: 4},
+			"4\tU+0042\tB\tLATIN CAPITAL LETTER B",
+		},
+		{
+			"rune",
+			entry{key: "\x00", count: 2},
+			"2\tU+0000\t�\t<control>",
+		},
+		{
+			"rune",
+			entry{key: "π", count: 3},
+			"3\tU+03C0\tπ\tGREEK SMALL LETTER PI",
+		},
+		{
+			"rune",
+			entry{key: "😀", count: 1},
+			"1\tU+1F600\t😀\tGRINNING FACE",
+		},
+	}
+	for _, tt := range tests {
+		got := prettyFuncs[tt.by](tt.in)
+		if diff := cmp.Diff(tt.want, got); diff != "" {
+			t.Errorf(
+				"key=%q, count=%d, by=%q: mismatch (-want +got):\n%s",
+				tt.in.key, tt.in.count, tt.by, diff,
+			)
+		}
+	}
+}
+
 func TestDistribution(t *testing.T) {
 	tests := []struct {
 		in   string
@@ -58,6 +116,21 @@ func TestDistribution(t *testing.T) {
 		{
 			"",
 			"line",
+			map[string]int{},
+		},
+		{
+			"",
+			"word",
+			map[string]int{},
+		},
+		{
+			"",
+			"byte",
+			map[string]int{},
+		},
+		{
+			"",
+			"rune",
 			map[string]int{},
 		},
 		{
@@ -162,7 +235,7 @@ func TestDistribution(t *testing.T) {
 			},
 		},
 		{
-			"\xe3\x81\x82",
+			"あ",
 			"byte",
 			map[string]int{
 				"\xe3": 1,
@@ -175,10 +248,10 @@ func TestDistribution(t *testing.T) {
 		r := strings.NewReader(tt.in)
 		got, err := distribution(r, splitFuncs[tt.by])
 		if err != nil {
-			t.Errorf("%q: -by %s: error: %v", tt.in, tt.by, err)
+			t.Errorf("in=%q, by=%q: error: %v", tt.in, tt.by, err)
 		}
 		if diff := cmp.Diff(tt.want, got); diff != "" {
-			t.Errorf("%q: -by %s: mismatch (-want +got):\n%s", tt.in, tt.by, diff)
+			t.Errorf("in=%q, by=%q: mismatch (-want +got):\n%s", tt.in, tt.by, diff)
 		}
 	}
 }
