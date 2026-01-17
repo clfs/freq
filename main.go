@@ -15,6 +15,13 @@ import (
 	"golang.org/x/text/unicode/runenames"
 )
 
+var splitFuncs = map[string]bufio.SplitFunc{
+	"line": bufio.ScanLines,
+	"byte": bufio.ScanBytes,
+	"rune": bufio.ScanRunes,
+	"word": bufio.ScanWords,
+}
+
 type unsupportedByError string
 
 func (e unsupportedByError) Error() string {
@@ -28,15 +35,16 @@ type command struct {
 }
 
 func newCommand(by string, r io.Reader, w io.Writer) *command {
-	return &command{
-		by: by,
-		r:  r,
-		w:  w,
-	}
+	return &command{by: by, r: r, w: w}
 }
 
 func (c *command) run() error {
-	d, err := distribution(c.r, c.by)
+	fn, ok := splitFuncs[c.by]
+	if !ok {
+		return unsupportedByError(c.by)
+	}
+
+	d, err := distribution(c.r, fn)
 	if err != nil {
 		return err
 	}
@@ -95,36 +103,14 @@ func main() {
 	}
 }
 
-func distribution(r io.Reader, by string) (map[string]int, error) {
-	var splitFunc bufio.SplitFunc
-
-	switch by {
-	case "line":
-		splitFunc = bufio.ScanLines
-	case "byte":
-		splitFunc = bufio.ScanBytes
-	case "rune":
-		splitFunc = bufio.ScanRunes
-	case "word":
-		splitFunc = bufio.ScanWords
-	default:
-		return nil, unsupportedByError(by)
-	}
-
+func distribution(r io.Reader, split bufio.SplitFunc) (map[string]int, error) {
 	m := make(map[string]int)
-
 	s := bufio.NewScanner(r)
-	s.Split(splitFunc)
-
+	s.Split(split)
 	for s.Scan() {
 		m[s.Text()]++
 	}
-
-	if err := s.Err(); err != nil {
-		return nil, err
-	}
-
-	return m, nil
+	return m, s.Err()
 }
 
 func firstRune(s string) rune {

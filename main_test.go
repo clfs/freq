@@ -65,13 +65,6 @@ func TestCommand_Run(t *testing.T) {
 	}
 }
 
-func TestDistribution_UnsupportedBy(t *testing.T) {
-	_, err := distribution(strings.NewReader("a"), "sentence")
-	if _, ok := err.(unsupportedByError); !ok {
-		t.Errorf("want unsupportedByError, got %v", err)
-	}
-}
-
 func TestDistribution(t *testing.T) {
 	tests := []struct {
 		in   string
@@ -102,7 +95,7 @@ func TestDistribution(t *testing.T) {
 
 	for _, tt := range tests {
 		r := strings.NewReader(tt.in)
-		got, err := distribution(r, tt.by)
+		got, err := distribution(r, splitFuncs[tt.by])
 		if err != nil {
 			t.Errorf("%q: -by %s: error: %v", tt.in, tt.by, err)
 		}
