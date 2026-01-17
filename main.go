@@ -30,7 +30,7 @@ func main() {
 
 	mode, ok := supportedModes[*byFlag]
 	if !ok {
-		log.Fatalln("error: invalid -by value")
+		log.Fatalf("error: unsupported mode %q", *byFlag)
 	}
 
 	distribution := make(map[string]int)
