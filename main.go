@@ -22,6 +22,14 @@ type command struct {
 	w  io.Writer
 }
 
+func newCommand(by string, r io.Reader, w io.Writer) *command {
+	return &command{
+		by: by,
+		r:  r,
+		w:  w,
+	}
+}
+
 func (c *command) run() error {
 	d, err := distribution(c.r, c.by)
 	if err != nil {
@@ -75,11 +83,7 @@ func main() {
 	byFlag := flag.String("by", "line", "line, byte, rune, or word")
 	flag.Parse()
 
-	cmd := command{
-		by: *byFlag,
-		r:  os.Stdin,
-		w:  os.Stdout,
-	}
+	cmd := newCommand(*byFlag, os.Stdin, os.Stdout)
 
 	if err := cmd.run(); err != nil {
 		log.Fatal(err)
