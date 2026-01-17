@@ -16,20 +16,16 @@ import (
 	"golang.org/x/text/unicode/runenames"
 )
 
-type entry struct {
-	key   string
-	count int
+type command struct {
+	by string
+	r  io.Reader
+	w  io.Writer
 }
 
-func main() {
-	log.SetFlags(0)
-
-	byFlag := flag.String("by", "line", "line, byte, rune, or word")
-	flag.Parse()
-
-	d, err := distribution(os.Stdin, *byFlag)
+func (c *command) run() error {
+	d, err := distribution(c.r, c.by)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	var entries []entry
@@ -48,21 +44,45 @@ func main() {
 		return cmp.Compare(a.key, b.key)
 	})
 
-	switch *byFlag {
+	switch c.by {
 	case "line", "word":
 		for _, e := range entries {
-			fmt.Printf("%d\t%s\n", e.count, e.key)
+			fmt.Fprintf(c.w, "%d\t%s\n", e.count, e.key)
 		}
 	case "byte":
 		for _, e := range entries {
-			fmt.Printf("%d\t%02x\t%s\t%s\n", e.count, e.key, neatByte(e.key[0]), runenames.Name(rune(e.key[0])))
+			fmt.Fprintf(c.w, "%d\t%02x\t%s\t%s\n", e.count, e.key, neatByte(e.key[0]), runenames.Name(rune(e.key[0])))
 		}
 	case "rune":
 		for _, e := range entries {
-			fmt.Printf("%d\t%U\t%s\t%s\n", e.count, firstRune(e.key), neatRune(firstRune(e.key)), runenames.Name(firstRune(e.key)))
+			fmt.Fprintf(c.w, "%d\t%U\t%s\t%s\n", e.count, firstRune(e.key), neatRune(firstRune(e.key)), runenames.Name(firstRune(e.key)))
 		}
 	default:
-		log.Fatalf("invalid -by value: %s", *byFlag)
+		return fmt.Errorf("invalid -by value: %s", c.by)
+	}
+
+	return nil
+}
+
+type entry struct {
+	key   string
+	count int
+}
+
+func main() {
+	log.SetFlags(0)
+
+	byFlag := flag.String("by", "line", "line, byte, rune, or word")
+	flag.Parse()
+
+	cmd := command{
+		by: *byFlag,
+		r:  os.Stdin,
+		w:  os.Stdout,
+	}
+
+	if err := cmd.run(); err != nil {
+		log.Fatal(err)
 	}
 }
 
