@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -61,5 +62,27 @@ func TestCommand_Run(t *testing.T) {
 				})
 			}
 		})
+	}
+}
+
+func TestDistribution(t *testing.T) {
+	tests := []struct {
+		in   string
+		by   string
+		want map[string]int
+	}{
+		{"a a a", "word", map[string]int{"a": 3}},
+		{"aa a", "word", map[string]int{"aa": 1, "a": 1}},
+	}
+
+	for _, tt := range tests {
+		r := strings.NewReader(tt.in)
+		got, err := distribution(r, tt.by)
+		if err != nil {
+			t.Errorf("%q: -by %s: returned error: %v", tt.in, tt.by, err)
+		}
+		if diff := cmp.Diff(tt.want, got); diff != "" {
+			t.Errorf("%q: -by %s: mismatch (-want +got):\n%s", tt.in, tt.by, diff)
+		}
 	}
 }

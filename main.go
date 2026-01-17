@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"cmp"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -15,6 +14,12 @@ import (
 
 	"golang.org/x/text/unicode/runenames"
 )
+
+type unsupportedByError string
+
+func (e unsupportedByError) Error() string {
+	return fmt.Sprintf("unsupported -by value: %s", string(e))
+}
 
 type command struct {
 	by string
@@ -66,7 +71,7 @@ func (c *command) run() error {
 			fmt.Fprintf(c.w, "%d\t%U\t%s\t%s\n", e.count, firstRune(e.key), neatRune(firstRune(e.key)), runenames.Name(firstRune(e.key)))
 		}
 	default:
-		return fmt.Errorf("invalid -by value: %s", c.by)
+		return unsupportedByError(c.by)
 	}
 
 	return nil
@@ -103,7 +108,7 @@ func distribution(r io.Reader, by string) (map[string]int, error) {
 	case "word":
 		splitFunc = bufio.ScanWords
 	default:
-		return nil, errors.New("invalid by")
+		return nil, unsupportedByError(by)
 	}
 
 	m := make(map[string]int)
