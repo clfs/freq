@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
+	"errors"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -65,6 +67,21 @@ func TestCommand_Run(t *testing.T) {
 	}
 }
 
+func TestDistribution_TooLong(t *testing.T) {
+	in := strings.Repeat("a", bufio.MaxScanTokenSize+1)
+	_, err := distribution(strings.NewReader(in), "word")
+	if !errors.Is(err, bufio.ErrTooLong) {
+		t.Errorf("want bufio.ErrTooLong, got %v", err)
+	}
+}
+
+func TestDistribution_UnsupportedBy(t *testing.T) {
+	_, err := distribution(strings.NewReader("a"), "sentence")
+	if _, ok := err.(unsupportedByError); !ok {
+		t.Errorf("want unsupportedByError, got %v", err)
+	}
+}
+
 func TestDistribution(t *testing.T) {
 	tests := []struct {
 		in   string
@@ -79,7 +96,7 @@ func TestDistribution(t *testing.T) {
 		r := strings.NewReader(tt.in)
 		got, err := distribution(r, tt.by)
 		if err != nil {
-			t.Errorf("%q: -by %s: returned error: %v", tt.in, tt.by, err)
+			t.Errorf("%q: -by %s: error: %v", tt.in, tt.by, err)
 		}
 		if diff := cmp.Diff(tt.want, got); diff != "" {
 			t.Errorf("%q: -by %s: mismatch (-want +got):\n%s", tt.in, tt.by, diff)
