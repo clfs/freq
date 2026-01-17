@@ -127,17 +127,12 @@ func firstRune(s string) rune {
 }
 
 func neatRune(r rune) string {
-	x := utf8.RuneError
-	if unicode.IsPrint(r) {
-		x = r
+	if !unicode.IsPrint(r) {
+		return string(utf8.RuneError)
 	}
-	return string(x)
+	return string(r)
 }
 
 func neatByte(b byte) string {
-	x := utf8.RuneError
-	if r := rune(b); unicode.IsPrint(r) {
-		x = r
-	}
-	return string(x)
+	return neatRune(rune(b))
 }
